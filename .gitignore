@@ -44,4 +44,4 @@ data/
 mlruns/
 mlflow.db
 *.pkl
-models/*.pkl
+
