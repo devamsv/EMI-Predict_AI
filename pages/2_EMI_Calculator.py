@@ -1,8 +1,30 @@
+"""
+EMI Calculator Page - Streamlit App
+Provides real-time EMI eligibility and safety assessment.
+"""
+
 import streamlit as st
 import numpy as np
-from utils.styles import apply_styling
-from utils.helpers import load_models, make_prediction
-from utils.config import HIGH_CREDIT_SCORE_THRESHOLD, LOW_CREDIT_SCORE_THRESHOLD, DTI_HIGH_RISK_THRESHOLD
+
+# Import with error handling for missing modules
+try:
+    from utils.styles import apply_styling
+    from utils.helpers import load_models, make_prediction
+    from utils.config import (
+        HIGH_CREDIT_SCORE_THRESHOLD,
+        LOW_CREDIT_SCORE_THRESHOLD,
+        DTI_HIGH_RISK_THRESHOLD,
+    )
+except ImportError as e:
+    st.error(
+        f"❌ **Import Error**\n\n"
+        f"Failed to import required modules: {e}\n\n"
+        f"This usually means:\n"
+        f"- utils/ package is missing __init__.py\n"
+        f"- A required dependency is not installed\n"
+        f"- Streamlit Cloud needs to be redeployed"
+    )
+    st.stop()
 
 # --------------------------------------------------
 # PAGE CONFIG
@@ -12,7 +34,11 @@ st.set_page_config(
     page_icon="🧮",
     layout="wide"
 )
-apply_styling()
+
+try:
+    apply_styling()
+except Exception as e:
+    st.warning(f"Could not apply custom styling: {e}")
 
 # --------------------------------------------------
 # LOAD MODELS
@@ -29,13 +55,14 @@ st.markdown(
 
 # Graceful failure handling with user-friendly message
 if not classifier or not regressor:
-    st.info(
-        "⏳ **App Initializing...**\n\n"
-        "The EMI Calculator is currently loading required ML models. "
-        "If this message persists, please:\n"
+    st.warning(
+        "⏳ **Models are Loading...**\n\n"
+        "The ML models required for EMI calculation are loading. "
+        "Please try:\n"
         "1. Refresh the page (F5)\n"
-        "2. Check back in a few moments\n"
-        "3. Report the issue if error persists"
+        "2. Wait a moment and reload\n"
+        "3. Check your internet connection\n\n"
+        "If the error persists, contact support."
     )
     st.stop()
 
