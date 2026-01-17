@@ -40,13 +40,13 @@ Thumbs.db
 mlruns/
 .mlflow/
 
-# Models and large files
-*.pkl
+# Temporary/training artifacts only (NOT production models)
+# Production models in /models/ are committed intentionally
+notebooks/*.pkl
+notebooks/*.joblib
 *.h5
-*.joblib
-models/
 
-# Data
+# Data (raw data excluded, processed data included)
 data/raw/
 
 # Notebooks

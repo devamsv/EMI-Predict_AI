@@ -1,18 +1,31 @@
 import os
 from pathlib import Path
 
-# Base Paths
+# ============================================================================
+# BASE PATHS - PRODUCTION SAFE (Works locally, Docker, Streamlit Cloud)
+# ============================================================================
+# Using __file__ ensures paths are relative to this config file's location
 BASE_DIR = Path(__file__).resolve().parent.parent
 MODELS_DIR = BASE_DIR / "models"
 DATA_DIR = BASE_DIR / "data"
 
-# Model Paths
+# ============================================================================
+# MODEL PATHS - WITH EXISTENCE CHECKS
+# ============================================================================
 CLASSIFIER_PATH = MODELS_DIR / "emi_eligibility_model.pkl"
 REGRESSOR_PATH = MODELS_DIR / "max_emi_model.pkl"
-PREPROCESSOR_PATH = MODELS_DIR / "preprocessor.pkl" # Added for safety, though may be built-in
 
-# Data Paths
+# Verify model files exist (helpful for debugging deployment issues)
+MODELS_EXIST = {
+    "classifier": CLASSIFIER_PATH.exists(),
+    "regressor": REGRESSOR_PATH.exists(),
+}
+
+# ============================================================================
+# DATA PATHS
+# ============================================================================
 DATASET_PATH = DATA_DIR / "raw" / "emi_prediction_dataset.csv"
+PROCESSED_DATASET_PATH = DATA_DIR / "processed" / "emi_prediction_dataset_cleaned.csv"
 
 # App Constants
 APP_TITLE = "EMIPredict AI"

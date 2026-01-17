@@ -1,19 +1,65 @@
 import joblib
 import pandas as pd
 import streamlit as st
-from utils.config import CLASSIFIER_PATH, REGRESSOR_PATH, TRAINING_FEATURES
+from pathlib import Path
+from utils.config import CLASSIFIER_PATH, REGRESSOR_PATH, TRAINING_FEATURES, MODELS_DIR, MODELS_EXIST
 
 @st.cache_resource
 def load_models():
     """
-    Loads the trained classification and regression models.
+    Loads trained ML models with comprehensive error handling.
+    
+    Production-safe implementation that provides:
+    - Clear debugging info if models are missing
+    - Graceful error messages for deployment issues
+    - Works across local, Docker, and Streamlit Cloud environments
+    
+    Returns:
+        tuple: (classifier, regressor) or (None, None) if loading fails
     """
+    # DEBUG: Log model file status
+    classifier_exists = CLASSIFIER_PATH.exists()
+    regressor_exists = REGRESSOR_PATH.exists()
+    
     try:
-        classifier = joblib.load(CLASSIFIER_PATH)
-        regressor = joblib.load(REGRESSOR_PATH)
+        # Verify model files exist before attempting to load
+        if not classifier_exists:
+            raise FileNotFoundError(
+                f"Classifier model not found at: {CLASSIFIER_PATH}\n"
+                f"Available files in {MODELS_DIR}: {list(MODELS_DIR.glob('*')) if MODELS_DIR.exists() else 'directory does not exist'}"
+            )
+        
+        if not regressor_exists:
+            raise FileNotFoundError(
+                f"Regressor model not found at: {REGRESSOR_PATH}\n"
+                f"Available files in {MODELS_DIR}: {list(MODELS_DIR.glob('*')) if MODELS_DIR.exists() else 'directory does not exist'}"
+            )
+        
+        # Load models
+        classifier = joblib.load(str(CLASSIFIER_PATH))
+        regressor = joblib.load(str(REGRESSOR_PATH))
+        
         return classifier, regressor
+        
+    except FileNotFoundError as e:
+        st.error(
+            f"❌ **Model Files Missing**\n\n"
+            f"Error: {e}\n\n"
+            f"**Solution:**\n"
+            f"1. Ensure `models/emi_eligibility_model.pkl` is committed to GitHub\n"
+            f"2. Check that `.gitignore` doesn't exclude `.pkl` files in the models/ directory\n"
+            f"3. Redeploy the Streamlit Cloud app"
+        )
+        return None, None
     except Exception as e:
-        st.error(f"Error loading models: {e}")
+        st.error(
+            f"❌ **Error Loading Models**\n\n"
+            f"Technical Error: {type(e).__name__}: {e}\n\n"
+            f"**Debugging steps:**\n"
+            f"- Check model file integrity\n"
+            f"- Verify joblib/scikit-learn versions match training environment\n"
+            f"- Check requirements.txt for compatible dependencies"
+        )
         return None, None
 
 def align_features(input_dict, required_features):
