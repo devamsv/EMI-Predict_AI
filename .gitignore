@@ -16,32 +16,42 @@ parts/
 sdist/
 var/
 wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
-# Virtual Environments
+# Virtual Environment
 venv/
-env/
 ENV/
-.env
-.venv
+env/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IDEs
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Streamlit
-.streamlit/ secrets.toml
+# OS
+.DS_Store
+Thumbs.db
 
-# ML/Data
-data/
+# MLflow
 mlruns/
-mlflow.db
-*.pkl
+.mlflow/
 
+# Models and large files
+*.pkl
+*.h5
+*.joblib
+models/
+
+# Data
+data/raw/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Environment
+.env
+.env.local
