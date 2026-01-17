@@ -27,8 +27,16 @@ st.markdown(
     "Enter your financial details below. Our AI combined with Fintech rules will determine your **Safe Monthly EMI** limit."
 )
 
+# Graceful failure handling with user-friendly message
 if not classifier or not regressor:
-    st.error("⚠️ Critical Error: Models failed to load. Please verify 'models/' directory integration.")
+    st.info(
+        "⏳ **App Initializing...**\n\n"
+        "The EMI Calculator is currently loading required ML models. "
+        "If this message persists, please:\n"
+        "1. Refresh the page (F5)\n"
+        "2. Check back in a few moments\n"
+        "3. Report the issue if error persists"
+    )
     st.stop()
 
 # --------------------------------------------------
